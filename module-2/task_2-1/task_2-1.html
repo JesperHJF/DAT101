@@ -5,8 +5,48 @@
   <title>Submission 2.1</title>
 </head>
 <body>
+<h2 style="text-align: center;">Task 2.1: Variables and Constants</h2>
+  <em>
+<b>1. Can we create variables and constants without assigning values to them? If not, why, and which
+ones (variables, constants, or both)?</b>
+<br>Variables can be created without an assign value. It can be created without value, and later given one when needed. Constants require that an assigned value at creation because its purpose is to represent a fixed and unchangeable value throughout a programs execution.<br>
+<br><br>
+
+<b>2. Can we create variables and constants on the same line, or must we separate them onto different
+lines? If we can, how do we differentiate them?</b>
+
+<br>Variables and constants can be created on the same line. They can be created separated by semicolon and will then work independently of each other. <br>
+<br><br>
+<b>3. Can we assign a new value to a constant later in the code? Try to explain why we can or cannot.</b>
+
+<br>A constant cannot have it value assigned later in the code. It is design to keep constant value throughout a programs execution.<br>
+<br><br>
+<b>4. What happens if we create a variable without using the let or const commands? Now, add "use
+strict" to the very top of your script. Describe what you observe in the browser's "Inspect"
+window. You can learn more about "use strict" on W3Schools.</b>
+
+<br>If we create a variable without using let or const, it will create a global variable, similarly to a variable made using the "var" command. If we apply "strict mode" to our script, it will disallow us from creating a variable this way, resulting in error.<br>
+<br><br>
+<b>5. What are implicit and explicit variable declarations?</b>
+
+<br>Explicit variable declarations are the creation of variables using the commands let, const (or var). Implicit variables are created without using a command, creating a global variable. Implicit variables are generally considered bad practice.<br>
+<br><br>
+</em>
+
 <script>
+ 
   /* write your code below this line  🙂 */
+   //"use strict";
+
+let A = 15;
+let B;
+const C = 11; let D = 20;
+valuePI = 3.14;
+P = 1;
+let UI = (U = 10, I =5);
+console.log(C*D/valuePI);
+console.log(U + I);
+
 
 </script>
 </body>
