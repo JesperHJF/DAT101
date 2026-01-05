@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="display: table; margin: auto; zoom: 1">
+<html lang="en" style="display: table; margin: center; zoom: 2">
   <head>
     <meta charset="UTF-8" />
     <title>Task 3.2</title>
@@ -10,9 +10,18 @@
       <span id="txtOut" style="white-space: nowrap"></span>
     </div>
     <ol>
-      <li>[Write the question here, and copy this for more questions]</li>
-      <p>[Write your answer here, and copy this for more answers]</p>
-    </ol>
+      <li>[In part 1, is it possible to solve the problem using a single "for" loop?]</li>
+      <p>[Yes, it's possible to achieve the correct result using a single "for" loop by keeping track of the counts of each die face in an array and checking for the winning conditions within the same loop.]</p>
+      <li>[In part 2, can we create what is known as an "infinite" loop within the condition of the "while" loop?
+          Describe what would or would not be necessary to achieve this. Provide a thorough explanation of
+          your answer.] </li>
+      <p>[Yes, it is possible to create an "infinite" loop within the condition of a "while" loop. To achieve this, the condition must always evaluate to true, and there must be no code within the loop that modifies the variables involved in the condition. This means that the loop will continue indefinitely until it is externally interrupted or the program is terminated.]</p>
+      <li>Discuss briefly how quickly or slowly a computer might be able to compute this, considering the
+number of guesses and the time it takes. How does the program behave while it is guessing? Can
+the program perform other tasks concurrently?</li>
+<p>[The speed at which a computer can compute the number of guesses depends on various factors, including the efficiency of the algorithm used and the processing power of the machine. While the program is guessing, it is essentially in a loop, continuously generating random numbers until it finds the correct one. During this time, the program is not able to perform other tasks concurrently, as JavaScript is single-threaded. However, if the guessing process is offloaded to a web worker or a separate thread, it could potentially allow the main thread to remain responsive and handle other tasks simultaneously.]</p>
+
+   </ol>
     <script type="module" src="./task_3-2.mjs" defer></script>
   </body>
 </html>

@@ -72,7 +72,7 @@ printOut("The image size is: " + imageSize + "MP");
 if (imageSize < 4) {
   printOut("The image is too small.");
 }
-else if (imageSize >= 6) {
+else if (imageSize > 6) {
   printOut("The image is too large.");
 }
 else {
