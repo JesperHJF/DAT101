@@ -7,38 +7,13 @@ Norwegian standard. Example: "Friday, October 18, 2019" Use an example from this
 toLocaleString , Use "no-NB" as an alias for the Norwegian language in the function call to
 "toLocaleDateString".*/
 
-function capitalizeFirstLetter(string) {
-  if (!string) return string; // Handle empty or null strings
-
-  return string.charAt(0).toUpperCase() + string.slice(1);
+/*function formatDate () {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
+    let todayFormatted = new Date().toLocaleDateString("no-NB", options);
+    todayFormatted = todayFormatted.charAt(0).toUpperCase() + todayFormatted.slice(1);
 }
+printOut(formatDate);*/
 
-function printTodaysDate() {
-    const today = new Date();
-    const todayToString = today.toLocaleDateString("no-NB", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-    });
-    const month = today.toLocaleDateString("no-NB", { month: "long" });
-    const weekdayCap = capitalizeFirstLetter(todayToString);
-    printOut(weekdayCap);
-}
-
-const nowSec = new Date().getSeconds();
-const nowMin = new Date().getMinutes();
-const nowHour = new Date().getHours();
-const nowDay = new Date().getDate();
-const nowMonth = new Date().getMonth() + 1; // Months are zero-based
-const nowYear = new Date().getFullYear();
-printOut(nowYear + nowMonth + nowDay + nowHour + nowMin + nowSec);
-function updateSeconds() {
-    //replaceText(((nowYear*60*60*24*12*12).toString()) + (nowMonth*60*60*24*12) + (nowDay*60*60*24) + (nowHour*60*60) + (nowMin*60) + nowSec);
-    printOut("Seconds since start of year: " + (((((nowMonth - 1) * 30 + (nowDay - 1)) * 24 + nowHour) * 60 + nowMin) * 60 + nowSec).toString());
-}
-setInterval(updateSeconds, 10000);
-printOut()
 
 printOut(newLine);
 
@@ -61,7 +36,33 @@ printOut("Replace this with you answer!");
 printOut(newLine);
 
 printOut("--- Part 3 ----------------------------------------------------------------------------------------------");
-/* Put your code below here!*/
+/* Create a function that receives the radius of a circle and prints the diameter, circumference, and area */
+
+
+let radius = 15;
+let diameter = 0;
+let circumference = 0;
+let area = 0;
+
+function calculateCircle() {
+    let diameter = 2 * radius;
+    let circumference = 2 * Math.PI * radius;
+    let area = Math.PI * Math.pow(radius, 2);
+
+    printOut("Radius: " + radius.toFixed(2));
+    printOut(newLine);
+    printOut("Diameter: " + diameter.toFixed(2));
+    printOut(newLine);
+    printOut("Circumference: " + circumference.toFixed(2));
+    printOut(newLine);
+    printOut("Area: " + area.toFixed(2));
+    printOut(newLine);
+return;
+}
+printOut(area);
+
+
+
 printOut("Replace this with you answer!");
 printOut(newLine);
 
