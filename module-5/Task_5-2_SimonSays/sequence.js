@@ -6,6 +6,12 @@ let sequence = [];
 let round = 1;
 let seqIndex = 0;
 
+export function resetSequence(){
+    sequence = [];
+    round = 1;
+    seqIndex = 0;
+}
+
 export function addRandomButton(aColorButtons){
  const index = Math.floor(Math.random() * aColorButtons.length);
  colorButton = aColorButtons[index];

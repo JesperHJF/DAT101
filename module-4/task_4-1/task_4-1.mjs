@@ -1,6 +1,9 @@
+
 "use strict";
 import { printOut, newLine } from "../../common/script/utils.mjs";
+printOut(document.getElementById("txtOut"));
 
+// Part 1: Account Types (5 points)
 printOut("--- Part 1 ----------------------------------------------------------------------------------------------");
 
 const AccountType = {
@@ -154,10 +157,7 @@ printOut("--- Part 6 -----------------------------------------------------------
 const CurrencyTypes = {
     NOK: { value: 1.0000, name: "Norske kroner", denomination: "kr" },
     SEK: { value: 1.0580, name: "Svenska kroner", denomination: "kr" },
-    USD: { value: 10.91, name: "United States dollar", denomination: "$" },
-    GBP: { value: 0.0881, name: "Pound sterling", denomination: "£" },
-    CAD: { value: 0.1487, name: "Canadiske dollar", denomination: "C$" },
-    INR: { value: 9.0874, name: "Indiske rupee", denomination: "₹" }
+    USD: { value: 0.1091, name: "United States dollar", denomination: "$" }
 };
 
 // Function to convert between currencies
@@ -222,12 +222,26 @@ printOut(newLine);
 
 printOut("--- Part 7 ----------------------------------------------------------------------------------------------");
 
+const CurrencyType2 = {
+    NOK: { value: 1.0000, name: "Norske kroner", denomination: "kr" },
+    SEK: { value: 1.0580, name: "Svenska kroner", denomination: "kr" },
+    USD: { value: 0.1091, name: "United States dollar", denomination: "$" },
+    GBP: { value: 0.0881, name: "Pound sterling", denomination: "£" },
+    CAD: { value: 0.1487, name: "Canadiske dollar", denomination: "C$" },
+    INR: { value: 9.0874, name: "Indiske rupee", denomination: "₹" }
+};
+
+
+function currencyConvert2(fromCurrency, toCurrency) {
+    return fromCurrency.value / toCurrency.value;
+}
+
 class TAccount7 {
     constructor() {
         this.privateType = "NOK";
         this.privateBalance = 0;
         this.privateWithdrawCount = 0;
-        this.privateCurrencyType = CurrencyTypes.NOK;
+        this.privateCurrencyType = CurrencyType2.NOK;
     }
 
     toString() {
@@ -236,19 +250,19 @@ class TAccount7 {
 
     setCurrencyType2(aType) {
         printOut(`The account currency has changed from ${this.privateCurrencyType.name} to ${aType.name}`);
-        this.privateBalance *= currencyConvert(this.privateCurrencyType, aType);
+        this.privateBalance *= currencyConvert2(this.privateCurrencyType, aType);
         this.privateCurrencyType = aType;
         printOut(`New balance is ${this.privateBalance.toFixed(2)}${this.privateCurrencyType.denomination}`);
     }
 
-    deposit(aAmount, aType = CurrencyTypes.NOK) {
-        const convertedAmount = aAmount * currencyConvert(aType, this.privateCurrencyType);
+    deposit(aAmount, aType = CurrencyType2.NOK) {
+        const convertedAmount = aAmount * currencyConvert2(aType, this.privateCurrencyType);
         this.privateBalance += convertedAmount;
         printOut(`Deposit of ${aAmount.toFixed(2)} ${aType.name}, new balance is ${this.privateBalance.toFixed(2)}${this.privateCurrencyType.denomination}`);
     }
 
-    withdraw(aAmount, aType = CurrencyTypes.NOK) {
-        const convertedAmount = aAmount * currencyConvert(aType, this.privateCurrencyType);
+    withdraw(aAmount, aType = CurrencyType2.NOK) {
+        const convertedAmount = aAmount * currencyConvert2(aType, this.privateCurrencyType);
         if (this.privateBalance >= convertedAmount) {
             this.privateBalance -= convertedAmount;
             printOut(`Withdrawal of ${aAmount.toFixed(2)} ${aType.name}, new balance is ${this.privateBalance.toFixed(2)}${this.privateCurrencyType.denomination}`);
@@ -269,3 +283,37 @@ myAccount2.setCurrencyType2(CurrencyType2.INR);
 myAccount2.withdraw(150.11, CurrencyType2.SEK);
 
 printOut(newLine);
+
+printOut("--- Part 8 ----------------------------------------------------------------------------------------------");
+
+
+function adjustTextSize(inputText, maxSize, fillChar, insertAtEnd) {
+    // If the input text is already larger than or equal to the max size, return it as is
+    if (inputText.length >= maxSize) {
+        return inputText;
+    }
+
+    // Calculate the number of fill characters needed to reach the max size
+    const charsToAdd = maxSize - inputText.length;
+    const filler = fillChar.repeat(charsToAdd); // Create a string with the required fill characters
+
+    // Add filler before or after the input text based on the insertAtEnd flag
+    const result = insertAtEnd ? inputText + filler : filler + inputText;
+    
+    return result;
+}
+
+let result1 = adjustTextSize("Hello", 10, "*", true);
+printOut(result1);  // Expected output: "Hello*****"
+
+let result2 = adjustTextSize("Hello", 10, "*", false);
+printOut(result2);  // Expected output: "*****Hello"
+
+let result3 = adjustTextSize("World", 8, "-", true);
+printOut(result3);  // Expected output: "World---"
+
+let result4 = adjustTextSize("World", 8, "-", false);
+printOut(result4);  // Expected output: "---World"
+
+let result5 = adjustTextSize("JavaScript", 5, "*", true);
+printOut(result5);  // Expected output: "JavaScript" (no change since "JavaScript" is already larger than 5)

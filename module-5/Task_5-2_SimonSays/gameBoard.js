@@ -3,7 +3,7 @@ import { TPoint, TCircle } from "lib2d";
 import { TSprite, TSpriteButton, TSpriteNumber } from "libSprite";
 import { TColorButton } from "./colorButton.js";
 import { activateAudioContext } from "libSound";
-import { spawnColorButton } from "./SimonSays.mjs";
+import { spawnColorButton, resetGame } from "./SimonSays.mjs";
 import { ESpriteNumberJustifyType } from "libSprite";
 
 export class TGameBoard extends TSprite{
@@ -87,7 +87,9 @@ export class TGameBoard extends TSprite{
         colorButton.createSound(i);
       }
     }
+    resetGame();
     spawnColorButton(); // This activates the sequence when we start the game.
+    
   }
   
 }
