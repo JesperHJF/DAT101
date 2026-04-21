@@ -1,6 +1,6 @@
 "use strict";
 import { TSprite } from "libSprite";
-import { hero, EGameStatus, menu } from "./FlappyBird.mjs";
+import { hero, EGameStatus, menu, isDayMode, gameOver } from "./FlappyBird.mjs";
 
 const EasyFlyerGap = 150;
 const HardFlyerGap = 100;
@@ -14,6 +14,7 @@ export class TObstacle{
   constructor(aSpcvs, aSPI){
     const x = 600;
     this.#spi = aSPI;
+    this.animationSpeed = 20;
     // Generate random gap height, based on difficulty settings
     const gap = Math.ceil(Math.random() * (EasyFlyerGap - HardFlyerGap) + HardFlyerGap);
     const minTop = -this.#spi.height + MinimumProtrusion; // Minimum top position for upper obstacle
@@ -31,8 +32,20 @@ export class TObstacle{
 
     this.#spDown = new TSprite(aSpcvs, aSPI, x, topWithGap);
     this.#spDown.index = 2;
-    this.#spUp = new TSprite(aSpcvs, aSPI, x, top);
+    this.#spUp = new TSprite(aSpcvs, aSPI, x, top); 
     this.#spUp.index = 3;
+    
+  }
+
+  changeDayNightPipes(){
+    if(isDayMode){
+      this.#spDown.index = 2;
+      this.#spUp.index = 3;
+    }
+    else{
+      this.#spDown.index = 0;
+      this.#spUp.index = 1;
+    }
   }
 
   // Properties
@@ -58,6 +71,7 @@ export class TObstacle{
     if(hasCollided){
       console.log("Collision with Hero!");
       EGameStatus.state = EGameStatus.heroIsDead;
+      gameOver();
       hero.animationSpeed = 0;
       menu.stopSound();
       hero.flap(); // Last flap of death!

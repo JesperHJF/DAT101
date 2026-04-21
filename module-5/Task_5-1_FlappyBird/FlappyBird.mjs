@@ -33,10 +33,13 @@ const SpriteInfoList = {
 
 export const EGameStatus = { idle: 0, countDown: 1, gaming: 2, heroIsDead: 3, gameOver: 4, state: 0 };
 const background = new TBackground(spcvs, SpriteInfoList);
+const obstacle = new TObstacle(spcvs, SpriteInfoList.obstacle);
 export const hero = new THero(spcvs, SpriteInfoList.hero1);
 const obstacles = [];
 const baits = [];
 export const menu = new TMenu(spcvs, SpriteInfoList);
+export let aIsMuted = "";
+export let isDayMode = "";
 let obstaclePassed = false;
 
 //--------------- Functions ----------------------------------------------//
@@ -58,6 +61,7 @@ function spawnBait() {
 function spawnObstacle() {
   if (EGameStatus.state === EGameStatus.gaming) {
     const obstacle = new TObstacle(spcvs, SpriteInfoList.obstacle);
+    obstacle.changeDayNightPipes();
     obstacles.push(obstacle);
     const nextTime = Math.ceil(Math.random() * 3) + 1;
     setTimeout(spawnObstacle, nextTime * 1000);
@@ -86,6 +90,7 @@ function animateGame() {
     for (let i = 0; i < obstacles.length; i++) {
       const obstacle = obstacles[i];
       obstacle.animate();
+      obstacle.index = i;
       if (obstacle.x < -50) {
         deleteObstacle = true;
         obstaclePassed = false;
@@ -142,16 +147,39 @@ function onKeyDown(aEvent) {
   }
 } // end of onKeyDown
 
-function setSoundOnOff() {
+export function setSoundOnOff(aEvent) {
   // Mute or unmute the game sound based on checkbox
+  if (document.getElementById("chkMuteSound").checked) {
+    console.log("Sound muted");
+    aIsMuted = true;
+  } else {
+    console.log("Sound unmuted");
+    aIsMuted = false;
+  }
+  menu.setSoundMute(aIsMuted);
 } // end of setSoundOnOff
 
 function setDayNight(aEvent) {
   // Set day or night mode based on radio buttons
-  // Day mode is when value is 1, night mode is 0, you can use this as a boolean, 1=true, 0=false
-  // e.g., isDayMode = (aEvent.target.value == 1);
-  console.log(`Day/Night mode changed: ${aEvent.target.value}`);
+  isDayMode = (aEvent.target.value == 1);
+  background.changeDayNight();
+  for (const obstacle of obstacles) {
+    obstacle.changeDayNightPipes();
+  }
+  console.log(`Day/Night mode changed: ${aEvent.target.value}` + isDayMode);
 } // end of setDayNight
+
+export function gameOver() {
+  EGameStatus.state = EGameStatus.gameOver;
+  menu.showGameOver();
+}
+
+export function restartGame() {
+  hero.restart();
+  EGameStatus.state = EGameStatus.countDown;
+  obstacles.length = 0;
+  baits.length = 0;
+}
 
 //--------------- Main Code ----------------------------------------------//
 chkMuteSound.addEventListener("change", setSoundOnOff);

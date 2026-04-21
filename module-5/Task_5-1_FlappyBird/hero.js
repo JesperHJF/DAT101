@@ -1,6 +1,6 @@
 "use strict";
 import { TSprite } from "libSprite";
-import { EGameStatus, menu } from "./FlappyBird.mjs";
+import { EGameStatus, menu, aIsMuted, gameOver } from "./FlappyBird.mjs";
 import { TSineWave } from "lib2d";
 import { TSoundFile } from "libSound";
 
@@ -16,11 +16,11 @@ export class THero extends TSprite {
   #sfHeroIsDead;
   #sfGameOver;
   constructor(aSpcvs, aSPI) {
-    super(aSpcvs, aSPI, 100, 20);
+    super(aSpcvs, aSPI, 100, 30);
     this.animationSpeed = 20;
     this.#gravity = 9.81 / 100;
     this.#speed = 0;
-    this.debug = true;
+    this.debug = false;
     this.#wave = new TSineWave(1, 1);
     this.y += this.#wave.value;
     this.#sfFood = null;
@@ -29,12 +29,14 @@ export class THero extends TSprite {
   }
 
   eat() {
-    if (this.#sfFood === null) {
+    if (!aIsMuted) {
+      if (this.#sfFood === null) {
       this.#sfFood = new TSoundFile(fnFood);
     } else {
       this.#sfFood.stop();
     }
-    this.#sfFood.play();
+      this.#sfFood.play();
+    }
   }
 
   animate() {
@@ -50,10 +52,13 @@ export class THero extends TSprite {
         }
       } else {
         EGameStatus.state = EGameStatus.gameOver;
+        gameOver();
         menu.stopSound();
         this.animationSpeed = 0;
-        this.#sfGameOver = new TSoundFile(fnGameOver);
-        this.#sfGameOver.play();
+        if (!aIsMuted) {
+          this.#sfGameOver = new TSoundFile(fnGameOver);
+          this.#sfGameOver.play();
+        }
       }
     } else if (EGameStatus.state === EGameStatus.idle) {
       this.y += this.#wave.value;
@@ -61,12 +66,22 @@ export class THero extends TSprite {
   } // End of animate
 
   dead(){
-    this.#sfHeroIsDead = new TSoundFile(fnHeroIsDead);
-    this.#sfHeroIsDead.play();
-  }
+    if (!aIsMuted) {
+      this.#sfHeroIsDead = new TSoundFile(fnHeroIsDead);
+      this.#sfHeroIsDead.play();
+  }}
 
   flap() {
     this.#speed = -3.5;
     this.rotation = 0;
   }
+
+  restart() {
+    this.x = 100;
+    this.y = 30;
+    this.#speed = 0;
+    this.rotation = 0;
+    this.animationSpeed = 20;
+  }
+
 }
