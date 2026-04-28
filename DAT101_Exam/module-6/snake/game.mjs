@@ -18,6 +18,8 @@ let gameSpeed = 4; // Game speed multiplier;
 let hndUpdateGame = null;
 export const EGameStatus = { Idle: 0, Playing: 1, Pause: 2, GameOver: 3 };
 
+let appleValue = 1; //Add higher value with time variable later
+
 
 
 
@@ -58,9 +60,13 @@ export function baitIsEaten() {
 
   console.log("Bait eaten!");
   /* Logic to increase the snake size and score when bait is eaten */
+  GameProps.menu.incGameScore(appleValue);
+  GameProps.bait.update();
+  GameProps.snake.clone(); //Not a function? Finn ut av hvordan gjøre slangen lengre
 
   increaseGameSpeed(); // Increase game speed
 }
+
 
 
 //------------------------------------------------------------------------------------------
@@ -76,7 +82,7 @@ function loadGame() {
   /* Create the game menu here */ 
   GameProps.menu = new TMenu(spcvs, SheetData);
 
-  newGame(); // Call this function from the menu to start a new game, remove this line when the menu is ready
+  //newGame(); // Call this function from the menu to start a new game, remove this line when the menu is ready
 
   requestAnimationFrame(drawGame);
   console.log("Game canvas is rendering!" + cvs.width + " " + cvs.height);
@@ -93,9 +99,16 @@ function drawGame() {
       GameProps.menu.draw();
       break;
     case EGameStatus.Playing:
+      GameProps.menu.draw();
+      GameProps.snake.draw();
+      GameProps.bait.draw();
+      break;
     case EGameStatus.Pause:
       GameProps.bait.draw();
       GameProps.snake.draw();
+      break;
+    case EGameStatus.GameOver:
+      GameProps.menu.draw();
       break;
 
     
@@ -111,8 +124,8 @@ function updateGame() {
     case EGameStatus.Playing:
 
       if (!GameProps.snake.update()) {
-        GameProps.gameStatus = EGameStatus.GameOver;
         console.log("Game over!");
+        GameProps.menu.snakeDead();
       }
       break;
   }
