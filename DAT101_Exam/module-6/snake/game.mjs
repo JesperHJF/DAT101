@@ -53,7 +53,11 @@ export function newGame() {
   GameProps.gameBoard = new TGameBoard();
   GameProps.snake = new TSnake(spcvs, new TBoardCell(5, 5)); // Initialize snake with a starting position
   GameProps.bait = new TBait(spcvs); // Initialize bait with a starting position
-  gameSpeed = 4; // Reset game speed
+  
+  // Reset game speed
+  gameSpeed = 4; 
+  hndUpdateGame = clearInterval(hndUpdateGame);
+  hndUpdateGame = setInterval(updateGame, 1000 / gameSpeed);
 }
 
 export function baitIsEaten() {
@@ -62,7 +66,7 @@ export function baitIsEaten() {
   /* Logic to increase the snake size and score when bait is eaten */
   GameProps.menu.incGameScore(appleValue);
   GameProps.bait.update();
-  GameProps.snake.clone(); //Not a function? Finn ut av hvordan gjøre slangen lengre
+  //GameProps.snake.clone(); //Not a function? Finn ut av hvordan gjøre slangen lengre
 
   increaseGameSpeed(); // Increase game speed
 }
@@ -78,12 +82,10 @@ function loadGame() {
   cvs.height = GameBoardSize.Rows * SheetData.Head.height;
 
   GameProps.gameStatus = EGameStatus.Idle; // change game status to Idle
-
+  
   /* Create the game menu here */ 
   GameProps.menu = new TMenu(spcvs, SheetData);
-
-  //newGame(); // Call this function from the menu to start a new game, remove this line when the menu is ready
-
+  GameProps.menu.animate();
   requestAnimationFrame(drawGame);
   console.log("Game canvas is rendering!" + cvs.width + " " + cvs.height);
   hndUpdateGame = setInterval(updateGame, 1000 / gameSpeed); // Update game every 1000ms / gameSpeed
@@ -93,7 +95,6 @@ function loadGame() {
 function drawGame() {
   // Clear the canvas
   spcvs.clearCanvas();
-  //menu.draw();
   switch (GameProps.gameStatus) {
     case EGameStatus.Idle:
       GameProps.menu.draw();
@@ -106,6 +107,7 @@ function drawGame() {
     case EGameStatus.Pause:
       GameProps.bait.draw();
       GameProps.snake.draw();
+      GameProps.menu.draw();
       break;
     case EGameStatus.GameOver:
       GameProps.menu.draw();
@@ -132,8 +134,10 @@ function updateGame() {
 }
 
 function increaseGameSpeed() {
-  /* Increase game speed logic here */
-  console.log("Increase game speed!");
+  hndUpdateGame = clearInterval(hndUpdateGame); // Clear the existing interval
+  gameSpeed+=0.3;
+  hndUpdateGame = setInterval(updateGame, 1000 / gameSpeed); // Set a new interval with the updated game speed
+  console.log("Increased game speed to " + gameSpeed);
 }
 
 
@@ -158,7 +162,7 @@ function onKeyDown(event) {
     case " ":
       console.log("Space key pressed!");
       /* Pause the game logic here */
-      
+      GameProps.menu.spResumeBtnClick();// Toggle game paused state
       break;
     default:
       console.log(`Key pressed: "${event.key}"`);
