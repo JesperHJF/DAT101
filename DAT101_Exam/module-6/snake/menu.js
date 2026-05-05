@@ -1,8 +1,19 @@
 "use strict";
 import { TSprite, TSpriteButton, TSpriteNumber} from "libSprite";
 import { GameProps, newGame, EGameStatus } from "./game.mjs";
+//import { TSoundFile } from "libSound";
 
 /* Use this file to create the menu for the snake game. */
+
+const bgMusicMain = new Audio('./Media/bgMusicMain.mp3');
+const bgMusicMenu = new Audio('./Media/bgMusicMenu.mp3');
+const sfEat = new Audio('./Media/sfEat.mp3');
+const sfDeath = new Audio('./Media/sfDeath.mp3');
+
+sfDeath.preload = true;
+sfEat.preload = true;
+bgMusicMain.preload = true;
+bgMusicMenu.preload = true;
 
 let appleValue = 1;
 let timerInterval = null;
@@ -74,22 +85,46 @@ export class TMenu {
         this.#spTimer.value = 9;
         this.#spTimer.visible = false;
         this.#spTimer.scale = 0.7;
+
+     
+
+        
+        bgMusicMenu.volume = 0;
+        bgMusicMain.volume = 0.5;
+        bgMusicMenu.loop = true;
+        bgMusicMain.loop = true;
+    }
+
+    switchBgMusic() {
+        // Added an offset to make the transition smoother
+        bgMusicMain.currentTime += 0.25;
+        bgMusicMenu.currentTime += 0.25;
+
+        if (bgMusicMenu.volume === 0) {
+            bgMusicMenu.volume = 0.5;
+            bgMusicMain.volume = 0;
+        } else {
+            bgMusicMenu.volume = 0;
+            bgMusicMain.volume = 0.5;
+        }
+        console.log("Switched background music");
     }
 
 
     draw(){
+    this.#spTimer.draw();
+    this.#spGameScore1.draw();
+    this.#spGameScore2.draw();
+    this.#spGameScore3.draw();
     this.#spPlayBtn.draw();
     this.#spGameOver.draw();
     this.#spRestart.draw();
     this.#spHome.draw();
-    this.#spGameScore1.draw();
-    this.#spGameScore2.draw();
-    this.#spGameScore3.draw();
     this.#spFinalScore1.draw();
     this.#spFinalScore2.draw();
     this.#spFinalScore3.draw();
     this.#spResumeBtn.draw();
-    this.#spTimer.draw();
+    
     }
 
     spPlayBtnClick(){
@@ -107,6 +142,18 @@ export class TMenu {
         this.#spTimer.visible = true;
         this.startTimer();
         //console.log(EGameStatus.state);
+
+
+    
+        
+        bgMusicMain.pause();
+        bgMusicMenu.pause();
+        bgMusicMain.play();
+        bgMusicMenu.play();
+
+        if (bgMusicMain.volume === 0) {
+            this.switchBgMusic();
+        }
     }
 
     spRestartClick(){
@@ -125,14 +172,21 @@ export class TMenu {
         this.#spFinalScore1.visible = false;
         this.#spFinalScore2.visible = false;
         this.#spFinalScore3.visible = false;
+        
         this.#spTimer.visible = true;
         this.startTimer();
         //console.log(EGameStatus.state);
+
+        this.switchBgMusic();
     }
 
     spHomeClick(){
         console.log("Home click");
         GameProps.gameStatus = EGameStatus.Idle;
+        this.#spGameScore1.visible = false;
+        this.#spGameScore2.visible = false;
+        this.#spGameScore3.visible = false;
+        this.#spTimer.visible = false;
         this.#spGameOver.hidden = true;
         this.#spRestart.hidden = true;
         this.#spHome.hidden = true;
@@ -148,37 +202,43 @@ export class TMenu {
         this.#spGameOver.hidden = false;
         this.#spRestart.hidden = false;
         this.#spHome.hidden = false;
-        this.#spGameScore1.visible = false;
-        this.#spGameScore2.visible = false;
-        this.#spGameScore3.visible = false;
         this.#spFinalScore1.value = this.#spGameScore1.value;
         this.#spFinalScore1.visible = true;
         this.#spFinalScore2.value = this.#spGameScore2.value;
         this.#spFinalScore2.visible = true;
         this.#spFinalScore3.value = this.#spGameScore3.value;
         this.#spFinalScore3.visible = true;
-        this.#spTimer.visible = false;
         console.log("Snake is dead");
+        
+        sfDeath.play();
+        this.switchBgMusic();
     }
 
     incGameScore(aScore){
-       // Score does not go above 99, please fix
+        sfEat.play();
+
         for (let i = appleValue; i > 0; i--) {
-       if (this.#spGameScore1.value < 9) {
-        this.#spGameScore1.value += aScore;
-    } else if (this.#spGameScore1.value === 9) {
-        this.#spGameScore1.value = 0;
-        if (this.#spGameScore2.value < 9) {
-            this.#spGameScore2.value++;
+            if (this.#spGameScore1.value < 9) {
+                this.#spGameScore1.value += aScore;
+            } else if (this.#spGameScore1.value === 9) {
+                this.#spGameScore1.value = 0;
+                if (this.#spGameScore2.value < 9) {
+                    this.#spGameScore2.value++;
+                }
+                else if (this.#spGameScore2.value === 9) {
+                    this.#spGameScore2.value = 0;
+                    this.#spGameScore3.value++;
+                }
+            }
         }
-        }
-    }
+    
         this.startTimer(); // Reset the timer when an apple is eaten
     
     }
 
     spResumeBtnClick(){
         //Pause or resume game
+        this.switchBgMusic();
         if(GameProps.gameStatus === EGameStatus.Playing) {
             GameProps.gameStatus = EGameStatus.Pause;
             this.#spResumeBtn.hidden = false;
@@ -205,7 +265,7 @@ export class TMenu {
         else {i++}
         this.#spPlayBtn.index = i;
         this.#spPlayBtn.draw();
-        this.#spResumeBtn.index = i;
+        this.#spResumeBtn.index = i;    
         this.#spResumeBtn.draw();
     }, 125);
     }
@@ -215,13 +275,17 @@ export class TMenu {
         appleValue = 9;
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
-        if (this.#spTimer.value > 1) {
-            this.#spTimer.value--;
-            appleValue--;
-        } else {
-            this.#spTimer.value = 0;
-            appleValue = 0;
-        }
+            if (GameProps.gameStatus === EGameStatus.Pause || GameProps.gameStatus === EGameStatus.GameOver) {
+                return; // Do not decrease timer while game is paused
+            }
+            else {if (this.#spTimer.value > 1) {
+                this.#spTimer.value--;
+                appleValue--;
+            } else {
+                this.#spTimer.value = 0;
+                appleValue = 0;
+        }}
+        
     }, 1000);
     }
 }

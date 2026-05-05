@@ -103,6 +103,7 @@ class TSnakeBody extends TSnakePart {
   update(){
     let spriteIndex = ESpriteIndex.RL;
     let boardCellInfo;
+
     switch (this.direction) {
       case EDirection.Up:
         this.boardCell.row--;
@@ -219,6 +220,7 @@ export class TSnake {
   #head = null;
   #body = null;
   #tail = null;
+  #newBodyPart = null;
   constructor(aSpriteCanvas, aBoardCell) {
     this.#head = new TSnakeHead(aSpriteCanvas, aBoardCell);
     let col = aBoardCell.col - 1;
@@ -235,21 +237,35 @@ export class TSnake {
     this.#tail.draw();
   } // draw
 
+  grow() {
+    this.#newBodyPart = this.#body[this.#body.length - 1].clone();
+  }
+
   //Returns true if the snake is alive
   update(){
+    
     if (this.#isDead) {
       return false; // Snake is dead, do not continue
     }
     if(this.#head.update()) {
+      
       for (let i = 0; i < this.#body.length; i++) {
         this.#body[i].update();
       }
-      this.#tail.update();  
+      if(this.#newBodyPart) {
+        this.#body.push(this.#newBodyPart);
+        this.#newBodyPart = null;
+      } else {
+        this.#tail.update();
+      }
     }else if(!this.#isDead){
       this.#isDead = true;
       return false; // Collision detected, do not continue
     }
     return true; // No collision, continue
+
+    
+
   }
 
   setDirection(aDirection) {

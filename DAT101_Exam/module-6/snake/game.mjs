@@ -66,7 +66,7 @@ export function baitIsEaten() {
   /* Logic to increase the snake size and score when bait is eaten */
   GameProps.menu.incGameScore(appleValue);
   GameProps.bait.update();
-  //GameProps.snake.clone(); //Not a function? Finn ut av hvordan gjøre slangen lengre
+  GameProps.snake.grow(); //Not a function? Finn ut av hvordan gjøre slangen lengre
 
   increaseGameSpeed(); // Increase game speed
 }
@@ -110,6 +110,8 @@ function drawGame() {
       GameProps.menu.draw();
       break;
     case EGameStatus.GameOver:
+      GameProps.snake.draw();
+      GameProps.bait.draw();
       GameProps.menu.draw();
       break;
 
@@ -135,7 +137,7 @@ function updateGame() {
 
 function increaseGameSpeed() {
   hndUpdateGame = clearInterval(hndUpdateGame); // Clear the existing interval
-  gameSpeed+=0.3;
+  gameSpeed+=0.10;
   hndUpdateGame = setInterval(updateGame, 1000 / gameSpeed); // Set a new interval with the updated game speed
   console.log("Increased game speed to " + gameSpeed);
 }
@@ -157,6 +159,18 @@ function onKeyDown(event) {
       GameProps.snake.setDirection(EDirection.Left);
       break;
     case "ArrowRight":
+      GameProps.snake.setDirection(EDirection.Right);
+      break;
+    case "w":
+      GameProps.snake.setDirection(EDirection.Up);
+      break;
+    case "s":
+      GameProps.snake.setDirection(EDirection.Down);
+      break;
+    case "a":
+      GameProps.snake.setDirection(EDirection.Left);
+      break;
+    case "d":
       GameProps.snake.setDirection(EDirection.Right);
       break;
     case " ":
