@@ -18,9 +18,7 @@ let gameSpeed = 4; // Game speed multiplier;
 let hndUpdateGame = null;
 export const EGameStatus = { Idle: 0, Playing: 1, Pause: 2, GameOver: 3 };
 
-let appleValue = 1; //Add higher value with time variable later
-
-
+let appleValue = 1;
 
 
 
@@ -37,6 +35,7 @@ export const SheetData = {
   Resume:   { x:   0, y: 357, width: 202, height: 202, count: 10 },
   Number:   { x:   0, y: 560, width:  81, height:  86, count: 10 },
 };
+
 
 export const GameProps = {
   gameBoard: null,
@@ -63,11 +62,9 @@ export function newGame() {
 export function baitIsEaten() {
 
   console.log("Bait eaten!");
-  /* Logic to increase the snake size and score when bait is eaten */
-  GameProps.menu.incGameScore(appleValue);
-  GameProps.bait.update();
-  GameProps.snake.grow(); //Not a function? Finn ut av hvordan gjøre slangen lengre
-
+  GameProps.menu.incGameScore(appleValue); // Increase score by time left on the timer when bait is eaten
+  GameProps.bait.update(); // Move the bait to a new random position
+  GameProps.snake.grow(); // Grow the snake when bait is eaten
   increaseGameSpeed(); // Increase game speed
 }
 
@@ -83,7 +80,6 @@ function loadGame() {
 
   GameProps.gameStatus = EGameStatus.Idle; // change game status to Idle
   
-  /* Create the game menu here */ 
   GameProps.menu = new TMenu(spcvs, SheetData);
   GameProps.menu.animate();
   requestAnimationFrame(drawGame);
@@ -137,7 +133,18 @@ function updateGame() {
 
 function increaseGameSpeed() {
   hndUpdateGame = clearInterval(hndUpdateGame); // Clear the existing interval
-  gameSpeed+=0.10;
+
+  // Increase game speed with a non-linear progression
+  if (gameSpeed < 8) {
+    gameSpeed+=0.125;
+  }
+  else if (gameSpeed >= 8 && gameSpeed < 12) {
+    gameSpeed+=0.0625;
+  }
+  else if (gameSpeed >= 12 && gameSpeed < 14) {
+    gameSpeed+=0.03125;
+  }
+  else {gameSpeed-=0.0025;}
   hndUpdateGame = setInterval(updateGame, 1000 / gameSpeed); // Set a new interval with the updated game speed
   console.log("Increased game speed to " + gameSpeed);
 }
@@ -149,6 +156,7 @@ function increaseGameSpeed() {
 
 function onKeyDown(event) {
   switch (event.key) {
+    // Use the arrow keys or WASD to control the snake's direction
     case "ArrowUp":
       GameProps.snake.setDirection(EDirection.Up);
       break;
@@ -175,7 +183,6 @@ function onKeyDown(event) {
       break;
     case " ":
       console.log("Space key pressed!");
-      /* Pause the game logic here */
       GameProps.menu.spResumeBtnClick();// Toggle game paused state
       break;
     default:

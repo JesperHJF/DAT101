@@ -24,7 +24,10 @@ class TSnakePart extends TSprite {
     this.boardCell = aBoardCell;
     let boardCellInfo = GameProps.gameBoard.getCell(aBoardCell.row, aBoardCell.col);
     this.direction = boardCellInfo.direction;
-    boardCellInfo.infoType = EBoardCellInfoType.Snake;
+
+    // The line bellow caused a bug making the snake collide with its spawn-point
+    //boardCellInfo.infoType = EBoardCellInfoType.Snake;
+    
     this.index = this.direction;
   }
 

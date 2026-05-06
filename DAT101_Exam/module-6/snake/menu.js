@@ -10,6 +10,19 @@ const bgMusicMenu = new Audio('./Media/bgMusicMenu.mp3');
 const sfEat = new Audio('./Media/sfEat.mp3');
 const sfDeath = new Audio('./Media/sfDeath.mp3');
 
+const gameBorder = document.getElementById("gameBorder");
+gameBorder.style.display = "none";
+gameBorder.style.opacity = 0.8;
+
+function showGameBorder() {
+    if (gameBorder.style.display === "block") {
+        gameBorder.style.display = "none";
+    } else {
+         gameBorder.style.display = "block";
+    }
+}
+
+
 sfDeath.preload = true;
 sfEat.preload = true;
 bgMusicMain.preload = true;
@@ -32,16 +45,23 @@ export class TMenu {
     #spResumeBtn;
     #spTimer;
     constructor (aSpcvs, aSPI) {
+        // Play button
         this.#spPlayBtn = new TSpriteButton(aSpcvs, aSPI.Play, 912/2-100, 684/2-100);
         this.#spPlayBtn.addEventListener("click", this.spPlayBtnClick.bind(this));
         this.#spPlayBtn.addEventListener("mouseenter", this.changeCursorPointer.bind(this));
         this.#spPlayBtn.hidden = false;
+
+        // Game over sprite
         this.#spGameOver = new TSprite(aSpcvs, aSPI.GameOver, 28, 50);
+        this.#spGameOver.hidden = true;
+
+        // Restart button
         this.#spRestart = new TSpriteButton (aSpcvs, aSPI.Retry, 642, 398);
         this.#spRestart.addEventListener("click", this.spRestartClick.bind(this));
         this.#spRestart.addEventListener("mouseenter", this.changeCursorPointer.bind(this));
-        this.#spGameOver.hidden = true;
         this.#spRestart.hidden = true;
+        
+        // Home button
         this.#spHome = new TSpriteButton(aSpcvs, aSPI.Home, 92, 398);
         this.#spHome.addEventListener("click", this.spHomeClick.bind(this));
         this.#spHome.addEventListener("mouseenter", this.changeCursorPointer.bind(this));
@@ -59,6 +79,10 @@ export class TMenu {
         this.#spGameScore3 = new TSpriteNumber(aSpcvs, aSPI.Number, 30, 45);
         this.#spGameScore3.value = 0;
         this.#spGameScore3.visible = false;
+        
+        this.#spGameScore1.scale = 0.6;
+        this.#spGameScore2.scale = 0.6;
+        this.#spGameScore3.scale = 0.6;
 
         // Final score sprites, same as the game score
         this.#spFinalScore1 = new TSpriteNumber(aSpcvs, aSPI.Number, 626+80, 264);
@@ -73,40 +97,45 @@ export class TMenu {
         this.#spFinalScore3.visible = false;
         this.#spFinalScore3.value = 0;
 
-        this.#spGameScore1.scale = 0.6;
-        this.#spGameScore2.scale = 0.6;
-        this.#spGameScore3.scale = 0.6;
-
+        // Resume button
         this.#spResumeBtn = new TSpriteButton(aSpcvs, aSPI.Resume, 912/2-100, 684/2-100);
         this.#spResumeBtn.addEventListener("click", this.spResumeBtnClick.bind(this));
         this.#spResumeBtn.addEventListener("mouseenter", this.changeCursorPointer.bind(this));
         this.#spResumeBtn.hidden = true;
+
+        // Timer sprite
         this.#spTimer = new TSpriteNumber(aSpcvs, aSPI.Number, 830, 45);
         this.#spTimer.value = 9;
         this.#spTimer.visible = false;
         this.#spTimer.scale = 0.7;
 
-     
-
-        
+        // Initial settings for music and sound effects
         bgMusicMenu.volume = 0;
         bgMusicMain.volume = 0.5;
         bgMusicMenu.loop = true;
         bgMusicMain.loop = true;
+        sfEat.volume = 0.5;
+        sfDeath.volume = 0.9;
+
     }
 
-    switchBgMusic() {
-        // Added an offset to make the transition smoother
-        bgMusicMain.currentTime += 0.25;
-        bgMusicMenu.currentTime += 0.25;
+        
 
-        if (bgMusicMenu.volume === 0) {
+    switchBgMusic() {
+        // Switch between menu and main background music with a fade effect
+        // Added an offset to make the transition smoother
+        bgMusicMain.preload = "auto";
+        bgMusicMenu.preload = "auto";
+            if (bgMusicMenu.volume === 0) {
             bgMusicMenu.volume = 0.5;
             bgMusicMain.volume = 0;
+            bgMusicMenu.currentTime += 0.15;
         } else {
             bgMusicMenu.volume = 0;
             bgMusicMain.volume = 0.5;
+            bgMusicMain.currentTime += 0.15;
         }
+        
         console.log("Switched background music");
     }
 
@@ -140,11 +169,10 @@ export class TMenu {
         this.#spGameScore3.value = 0;
         this.#spPlayBtn.disabled = true;
         this.#spTimer.visible = true;
+
         this.startTimer();
-        //console.log(EGameStatus.state);
 
-
-    
+        showGameBorder();
         
         bgMusicMain.pause();
         bgMusicMenu.pause();
@@ -175,7 +203,6 @@ export class TMenu {
         
         this.#spTimer.visible = true;
         this.startTimer();
-        //console.log(EGameStatus.state);
 
         this.switchBgMusic();
     }
@@ -183,6 +210,7 @@ export class TMenu {
     spHomeClick(){
         console.log("Home click");
         GameProps.gameStatus = EGameStatus.Idle;
+
         this.#spGameScore1.visible = false;
         this.#spGameScore2.visible = false;
         this.#spGameScore3.visible = false;
@@ -195,6 +223,8 @@ export class TMenu {
         this.#spFinalScore2.visible = false;
         this.#spFinalScore3.visible = false;
         this.#spPlayBtn.disabled = false;
+
+        showGameBorder();
     }
 
     snakeDead(){
@@ -211,10 +241,12 @@ export class TMenu {
         console.log("Snake is dead");
         
         sfDeath.play();
+        sfEat.pause();
         this.switchBgMusic();
     }
 
     incGameScore(aScore){
+        sfEat.pause(); // Restart the eat sound effect if it's already playing
         sfEat.play();
 
         for (let i = appleValue; i > 0; i--) {
@@ -238,20 +270,22 @@ export class TMenu {
 
     spResumeBtnClick(){
         //Pause or resume game
-        this.switchBgMusic();
+        
         if(GameProps.gameStatus === EGameStatus.Playing) {
             GameProps.gameStatus = EGameStatus.Pause;
+            this.switchBgMusic();
             this.#spResumeBtn.hidden = false;
             this.#spResumeBtn.disabled = false;
         }else if(GameProps.gameStatus === EGameStatus.Pause) {
             GameProps.gameStatus = EGameStatus.Playing;
+            this.switchBgMusic();
             this.#spResumeBtn.hidden = true;
             this.#spResumeBtn.disabled = true;
         }
     }
 
     changeCursorPointer(){
-        console.log("Change cursor to pointer");
+        // Change cursor to pointer when hovering over buttons
         cvs.style.cursor = "pointer";
     }
 
@@ -259,6 +293,8 @@ export class TMenu {
     
     animate() {
         const inIdle = EGameStatus.state === EGameStatus.idle;
+
+        // Animate the play and resume buttons in the idle or paused state
         let i = 0;
         setInterval(() => {
         if (i >8) {i = 0}
@@ -271,6 +307,7 @@ export class TMenu {
     }
 
     startTimer() {
+        // The initial point value of an apple is 9, but it decreases by 1 every second
         this.#spTimer.value = 9;
         appleValue = 9;
         clearInterval(timerInterval);
