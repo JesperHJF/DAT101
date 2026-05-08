@@ -135,16 +135,16 @@ function increaseGameSpeed() {
   hndUpdateGame = clearInterval(hndUpdateGame); // Clear the existing interval
 
   // Increase game speed with a non-linear progression
-  if (gameSpeed < 8) {
+  if (gameSpeed < 7.5) {
     gameSpeed+=0.125;
   }
-  else if (gameSpeed >= 8 && gameSpeed < 12) {
-    gameSpeed+=0.0625;
+  else if (gameSpeed >= 7.5 && gameSpeed < 8.5) {
+    gameSpeed+=0.025;
   }
-  else if (gameSpeed >= 12 && gameSpeed < 14) {
-    gameSpeed+=0.03125;
+  else if (gameSpeed >= 8.5 && gameSpeed < 10) {
+    gameSpeed+=0.0075;
   }
-  else {gameSpeed-=0.0025;}
+  else {gameSpeed-=0.0001;}
   hndUpdateGame = setInterval(updateGame, 1000 / gameSpeed); // Set a new interval with the updated game speed
   console.log("Increased game speed to " + gameSpeed);
 }
